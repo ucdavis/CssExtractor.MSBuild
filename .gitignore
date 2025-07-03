@@ -1,0 +1,39 @@
+# .gitignore for .NET 8.0 MSBuild Task Class Library
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code settings
+.vscode/
+
+# Rider settings
+.idea/
+*.sln.iml
+
+# NuGet packages
+*.nupkg
+*.snupkg
+# NuGet package restore results
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# MSBuild generated files
+*.cache
+*.log
+*.vspscc
+*.vssscc
+
+# Others
+*.DS_Store
+Thumbs.db
+
+# Output directories
+src/output/
+targets/output/
