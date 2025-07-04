@@ -7,7 +7,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>CssExtractor.MSBuild</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
     <Description>MSBuild task for extracting CSS classes from C# code</Description>
     <Authors>Spruce Weber-Milne</Authors>
     <PackageProjectUrl>https://github.com/ucdavis/CssExtractor.MSBuild</PackageProjectUrl>
@@ -18,6 +18,7 @@
     <PackageTags>MSBuild;CSS;Extractor;Build;Task</PackageTags>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <Copyright>Copyright © 2025 Your Name</Copyright>
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,10 +29,15 @@
 
   <ItemGroup>
     <None Include="build/**" Pack="true" PackagePath="build/" />
-    <None Include="buildTransitive/**" Pack="true" PackagePath="buildTransitive/" />
     <None Include="LICENSE" Pack="true" PackagePath="" />
     <None Include="README.md" Pack="true" PackagePath="" />
     <!-- <None Include="icon.png" Pack="true" PackagePath="" /> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(OutputPath)CssExtractor.MSBuild.dll" Pack="true" PackagePath="tools/net8.0/" />
+    <None Include="$(OutputPath)CssExtractor.MSBuild.pdb" Pack="true" PackagePath="tools/net8.0/" />
+    <None Include="$(OutputPath)Microsoft.Extensions.FileSystemGlobbing.dll" Pack="true" PackagePath="tools/net8.0/" />
   </ItemGroup>
 
 </Project>

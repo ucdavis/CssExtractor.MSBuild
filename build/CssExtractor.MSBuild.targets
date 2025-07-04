@@ -1,0 +1,85 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="CssExtractorTask"
+    AssemblyFile="$(MSBuildThisFileDirectory)..\tools\net8.0\CssExtractor.MSBuild.dll" />
+
+  <!-- Default patterns for common CSS class extraction scenarios -->
+  <PropertyGroup>
+    <CssExtractorBasePatterns>
+      class\s*=\s*"([^"@]+)";
+      class\s*=\s*'([^'@]+)';
+      class\s*:\s*"([^"@]+)";
+      class\s*:\s*'([^'@]+)';
+      className\s*[=:]\s*["']([^"@]+)["'];
+      class\s*=\s*"([^"]*?)"\s*(?:[^>]*>|$);
+      class\s*=\s*'([^']*?)'\s*(?:[^>]*>|$);
+      "([a-zA-Z][\w-]*(?:\s+[a-zA-Z][\w-]*)*)"(?=\s*[+@}]);
+      '([a-zA-Z][\w-]*(?:\s+[a-zA-Z][\w-]*)*)'(?=\s*[+@}])
+    </CssExtractorBasePatterns>
+  </PropertyGroup>
+
+  <!-- Default output file location - smart defaults for common scenarios -->
+  <PropertyGroup>
+    <!-- Default to content/ subdirectory for library projects, root for applications -->
+    <CssExtractorOutputFile Condition="'$(CssExtractorOutputFile)' == '' and '$(GeneratePackageOnBuild)' == 'true'">$(MSBuildProjectDirectory)/content/extracted-css-classes.txt</CssExtractorOutputFile>
+    <CssExtractorOutputFile Condition="'$(CssExtractorOutputFile)' == '' and '$(IsPackable)' == 'true'">$(MSBuildProjectDirectory)/content/extracted-css-classes.txt</CssExtractorOutputFile>
+    <CssExtractorOutputFile Condition="'$(CssExtractorOutputFile)' == '' and '$(OutputType)' == 'Library'">$(MSBuildProjectDirectory)/content/extracted-css-classes.txt</CssExtractorOutputFile>
+    <CssExtractorOutputFile Condition="'$(CssExtractorOutputFile)' == ''">$(MSBuildProjectDirectory)/extracted-css-classes.txt</CssExtractorOutputFile>
+  </PropertyGroup>
+
+  <!-- Default file patterns -->
+  <ItemGroup>
+    <!-- Common exclude patterns -->
+    <CssExtractorExcludeFiles Include="**/bin/**" />
+    <CssExtractorExcludeFiles Include="**/obj/**" />
+    <CssExtractorExcludeFiles Include="**/.git/**" />
+    <CssExtractorExcludeFiles Include="**/node_modules/**" />
+    <CssExtractorExcludeFiles Include="**/.vs/**" />
+    <CssExtractorExcludeFiles Include="**/docs/**" />
+    
+    <!-- Common include patterns -->
+    <CssExtractorIncludeFiles Include="**/*.cshtml" />
+    <CssExtractorIncludeFiles Include="**/*.razor" />
+    <CssExtractorIncludeFiles Include="**/*.html" />
+    <CssExtractorIncludeFiles Include="**/*.cs" />
+  </ItemGroup>
+
+  <!-- Target to merge base patterns with custom patterns -->
+  <Target Name="PrepareCssExtractorPatterns" BeforeTargets="ExtractCssClasses">
+    <PropertyGroup>
+      <!-- Merge base patterns with any custom patterns provided by the project -->
+      <CssExtractorPatterns Condition="'$(CssExtractorCustomPatterns)' != ''">$(CssExtractorBasePatterns);$(CssExtractorCustomPatterns)</CssExtractorPatterns>
+      <CssExtractorPatterns Condition="'$(CssExtractorCustomPatterns)' == ''">$(CssExtractorBasePatterns)</CssExtractorPatterns>
+    </PropertyGroup>
+  </Target>
+
+
+  <!-- Main extraction target -->
+  <Target Name="ExtractCssClasses" BeforeTargets="AssignTargetPaths" 
+          Inputs="@(CssExtractorIncludeFiles)" 
+          Outputs="$(CssExtractorOutputFile)"
+          DependsOnTargets="PrepareCssExtractorPatterns">
+    <CssExtractorTask
+      CssExtractorOutputFile="$(CssExtractorOutputFile)"
+      CssExtractorExcludeFiles="@(CssExtractorExcludeFiles)"
+      CssExtractorPatterns="$(CssExtractorPatterns)"
+      CssExtractorIncludeFiles="@(CssExtractorIncludeFiles)" />
+  </Target>
+
+  <!-- Auto-include extracted CSS file as content for packable projects -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true' and Exists('$(CssExtractorOutputFile)')">
+    <Content Include="$(CssExtractorOutputFile)">
+      <Pack>true</Pack>
+      <PackagePath>content/extracted-css-classes.txt</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <!-- For projects that generate packages, also include as content -->
+  <ItemGroup Condition="'$(GeneratePackageOnBuild)' == 'true' and Exists('$(CssExtractorOutputFile)')">
+    <Content Include="$(CssExtractorOutputFile)">
+      <Pack>true</Pack>
+      <PackagePath>content/extracted-css-classes.txt</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
