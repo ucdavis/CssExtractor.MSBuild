@@ -24,7 +24,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Build.Framework" Version="17.0.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +36,6 @@
   <ItemGroup>
     <None Include="$(OutputPath)CssExtractor.MSBuild.dll" Pack="true" PackagePath="tools/net8.0/" />
     <None Include="$(OutputPath)CssExtractor.MSBuild.pdb" Pack="true" PackagePath="tools/net8.0/" />
-    <None Include="$(OutputPath)Microsoft.Extensions.FileSystemGlobbing.dll" Pack="true" PackagePath="tools/net8.0/" />
   </ItemGroup>
 
 </Project>
