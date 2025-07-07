@@ -20,7 +20,7 @@ To use CssExtractor.MSBuild in your project, include it as a PackageReference in
 ```xml
 <!-- CSS Extraction -->
 <ItemGroup>
-  <PackageReference Include="CssExtractor.MSBuild" Version="1.2.0">
+  <PackageReference Include="CssExtractor.MSBuild" Version="1.3.0">
     <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     <PrivateAssets>all</PrivateAssets>
   </PackageReference>
