@@ -6,64 +6,84 @@ CssExtractor.MSBuild is a custom MSBuild task designed to extract CSS classes an
 
 ## Features
 
-- Extracts CSS classes from common file types such as HTML, CSHTML, and Razor.
-- Supports configurable regex patterns for file exclusion and class extraction.
-- Deduplicates CSS classes to ensure a clean output.
-- Outputs the extracted CSS classes to a specified file for further processing.
+- Automatically extracts CSS classes from HTML, CSHTML, Razor, and C# files using built-in patterns
+- Includes comprehensive patterns for standard HTML class attributes and common web frameworks
+- Supports custom regex patterns for extracting dynamically generated CSS classes in C# code
+- Deduplicates CSS classes to ensure a clean output
+- Smart default output locations for library vs application projects
+- Configurable file inclusion/exclusion patterns
 
 ## Installation
 
-To use CssExtractor.MSBuild in your project, include it as a dependency in your project file (`.csproj`):
+To use CssExtractor.MSBuild in your project, include it as a PackageReference in your project file (`.csproj`):
 
 ```xml
-<PackageReference Include="CssExtractor.MSBuild" Version="1.0.0" />
+<!-- CSS Extraction -->
+<ItemGroup>
+  <PackageReference Include="CssExtractor.MSBuild" Version="1.2.0">
+    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PrivateAssets>all</PrivateAssets>
+  </PackageReference>
+</ItemGroup>
 ```
 
 ## Configuration
 
-You can configure the CssExtractor task in your MSBuild project file. Below is an example configuration:
+CssExtractor.MSBuild works out-of-the-box with sensible defaults. It automatically scans common file types (HTML, CSHTML, Razor, and C# files) using built-in patterns that detect:
+
+- Standard HTML `class` attributes
+- React-style `className` attributes  
+- Various CSS-in-JS patterns
+- Common templating syntaxes
+
+### Built-in Patterns
+
+The extractor includes comprehensive built-in regex patterns for finding CSS classes in:
+- HTML files (`**/*.html`)
+- Razor files (`**/*.razor`) 
+- CSHTML files (`**/*.cshtml`)
+- C# files (`**/*.cs`)
+
+### Custom Patterns for Dynamic CSS Classes
+
+While the built-in patterns handle most standard cases, you can define custom patterns to extract CSS classes that are dynamically generated in your C# code. Suppose you have some fluent API calls like:
+
+```csharp
+var component = builder.WithClass("btn btn-primary");
+var icon = element.WithIcon("fas fa-user");
+```
+
+You can define custom extraction patterns in your project file as follows:
 
 ```xml
-<Target Name="ExtractCssClasses">
-  <CssExtractorTask 
-    OutputFile="path/to/output.css"
-    CssExtractorExcludeFiles="(node_modules|\.git)"
-    CssExtractorPatterns="\.className\s*{[^}]*}"
-    />
-</Target>
+<PropertyGroup>
+  <CssExtractorCustomPatterns>
+    \.WithClass\s*\(\s*"([^"]+)"\s*\)
+    ;
+    \.WithIcon\s*\(\s*"([^"]+)"\s*\)
+  </CssExtractorCustomPatterns>
+</PropertyGroup>
 ```
 
-### Properties
+### Advanced Configuration
 
-- **OutputFile**: The path to the output file where the deduplicated CSS classes will be written.
-- **CssExtractorExcludeFiles**: A regex pattern to exclude certain files from the extraction process. Multiple patterns can be specified.
-- **CssExtractorPatterns**: A regex pattern to define how CSS classes should be extracted from the files. Multiple patterns can be specified.
-
-## Examples
-
-### Integrating with Tailwind via Tailwind.MSBuild
-
-To integrate the output from CssExtractor.MSBuild with Tailwind, you can create a target in your project file that runs the CssExtractor task before the Tailwind build process:
+You can also customize file patterns and output location:
 
 ```xml
-<Target Name="Build" BeforeTargets="TailwindBuild">
-  <CssExtractorTask 
-    OutputFile="path/to/tailwind.css"
-    CssExtractorExcludeFiles="(node_modules|\.git)"
-    CssExtractorPatterns="\.className\s*{[^}]*}"
-    />
-</Target>
+<PropertyGroup>
+  <!-- Custom output file location -->
+  <CssExtractorOutputFile>$(MSBuildProjectDirectory)/styles/extracted-classes.txt</CssExtractorOutputFile>
+</PropertyGroup>
+
+<ItemGroup>
+  <!-- Add additional file types to scan -->
+  <CssExtractorIncludeFiles Include="**/*.tsx" />
+  <CssExtractorIncludeFiles Include="**/*.jsx" />
+  
+  <!-- Exclude additional directories -->
+  <CssExtractorExcludeFiles Include="**/tests/**" />
+</ItemGroup>
 ```
-
-### Executing Tailwind via CLI
-
-If you prefer to execute Tailwind via the command line, you can run the following command after the CssExtractor task has been executed:
-
-```bash
-npx tailwindcss -i ./src/input.css -o ./dist/output.css --minify
-```
-
-Make sure to adjust the input and output paths according to your project structure.
 
 ## License
 
