@@ -7,7 +7,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>CssExtractor.MSBuild</PackageId>
-    <PackageVersion>1.1.0</PackageVersion>
+    <PackageVersion>1.4.0</PackageVersion>
     <Description>MSBuild task for extracting CSS classes from C# code</Description>
     <Authors>Spruce Weber-Milne</Authors>
     <PackageProjectUrl>https://github.com/ucdavis/CssExtractor.MSBuild</PackageProjectUrl>

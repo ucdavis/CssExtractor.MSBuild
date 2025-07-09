@@ -86,7 +86,7 @@ namespace CssExtractor.MSBuild
         private static void TokenizeAndExtractClasses(string classValue, HashSet<string> result)
         {
             // Tokenize everything in the class attribute value
-            // Split by common delimiters and extract potential class names
+            // Split by common delimiters but preserve square brackets for Tailwind arbitrary values
             var tokens = Regex.Split(classValue, @"[\s\t\n@(){}?:;,""']+")
                 .Where(token => !string.IsNullOrWhiteSpace(token))
                 .Select(token => token.Trim())
@@ -113,8 +113,9 @@ namespace CssExtractor.MSBuild
             if (token.All(char.IsDigit) || token.Length > 50) 
                 return false;
             
-            // Basic CSS class name validation - start with letter, underscore, or hyphen
-            return Regex.IsMatch(token, @"^[a-zA-Z_-][\w-]*$");
+            // Enhanced CSS class name validation - supports Tailwind arbitrary values with square brackets
+            // Allow letters, numbers, hyphens, underscores, dots, colons, and square brackets (for Tailwind arbitrary values)
+            return Regex.IsMatch(token, @"^[a-zA-Z_-][\w\-\.\:\[\]]*$");
         }
 
         private static void ExtractFromCustomPatterns(string content, IEnumerable<string> patterns, HashSet<string> result)
