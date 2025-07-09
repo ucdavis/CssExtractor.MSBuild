@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>CssExtractor.MSBuild</PackageId>
-    <PackageVersion>1.4.0</PackageVersion>
+    <PackageVersion>1.5.0</PackageVersion>
     <Description>MSBuild task for extracting CSS classes from C# code</Description>
     <Authors>Spruce Weber-Milne</Authors>
     <PackageProjectUrl>https://github.com/ucdavis/CssExtractor.MSBuild</PackageProjectUrl>
@@ -17,7 +18,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>MSBuild;CSS;Extractor;Build;Task</PackageTags>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
-    <Copyright>Copyright © 2025 Your Name</Copyright>
+    <Copyright>Copyright © 2025 UC Davis</Copyright>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 
@@ -28,6 +29,7 @@
 
   <ItemGroup>
     <None Include="build/**" Pack="true" PackagePath="build/" />
+    <None Include="buildTransitive/net8.0/**" Pack="true" PackagePath="buildTransitive/net8.0/" />
     <None Include="LICENSE" Pack="true" PackagePath="" />
     <None Include="README.md" Pack="true" PackagePath="" />
     <!-- <None Include="icon.png" Pack="true" PackagePath="" /> -->

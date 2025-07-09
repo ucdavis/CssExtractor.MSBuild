@@ -22,6 +22,7 @@ To use CssExtractor.MSBuild in your project, include it as a PackageReference in
 <ItemGroup>
   <PackageReference Include="CssExtractor.MSBuild" Version="1.3.0">
     <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <!-- To make the build task available to consumers, omit the PrivateAssets element -->
     <PrivateAssets>all</PrivateAssets>
   </PackageReference>
 </ItemGroup>
@@ -67,7 +68,24 @@ You can define custom extraction patterns in your project file as follows:
 
 ### Advanced Configuration
 
-You can also customize file patterns and output location:
+There is another way to specify custom patterns that is transitive, meaning consumers of your library can also benefit from these patterns without needing to redefine them. This is useful for libraries that want to provide a consistent extraction experience.
+
+Create a file named `content/css-extractor-patterns.txt` in your project as follows:
+
+```txt
+\.WithClass\s*\(\s*"([^"]+)"\s*\)
+\.WithIcon\s*\(\s*"([^"]+)"\s*\)
+```
+
+Then, update your project file to pack it:
+
+```xml
+<ItemGroup>
+    <None Include="content/css-extractor-patterns.txt" Pack="true" PackagePath="content/css-extractor-patterns.txt" />
+</ItemGroup>
+```
+
+You can also customize files to include/exclude and output location:
 
 ```xml
 <PropertyGroup>
