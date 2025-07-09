@@ -2,6 +2,41 @@
   <UsingTask TaskName="CssExtractorTask"
     AssemblyFile="$(MSBuildThisFileDirectory)..\tools\net8.0\CssExtractor.MSBuild.dll" />
 
+  <!-- Custom task to read pattern files without backslash corruption -->
+  <UsingTask TaskName="ReadPatternsFromFile" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <FilePath ParameterType="System.String" Required="true" />
+      <Patterns ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          if (System.IO.File.Exists(FilePath))
+          {
+              var lines = System.IO.File.ReadAllLines(FilePath)
+                            .Where(line => !string.IsNullOrWhiteSpace(line))
+                            .Select(line => line.Trim())
+                            .ToArray();
+              
+              var items = new Microsoft.Build.Framework.ITaskItem[lines.Length];
+              for (int i = 0; i < lines.Length; i++)
+              {
+                  var item = new Microsoft.Build.Utilities.TaskItem(lines[i]);
+                  // Store the raw pattern in metadata to avoid MSBuild processing
+                  item.SetMetadata("RawPattern", lines[i]);
+                  items[i] = item;
+              }
+              Patterns = items;
+          }
+          else
+          {
+              Patterns = new Microsoft.Build.Framework.ITaskItem[0];
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
   <!-- Default patterns for common CSS class extraction scenarios -->
   <PropertyGroup>
     <CssExtractorBasePatterns>
@@ -61,13 +96,13 @@
     </PropertyGroup>
     
     <!-- Read each pattern file and append to _AllPatterns -->
-    <ReadLinesFromFile File="%(_CssExtractorPatternFiles.Identity)" Condition="Exists('%(_CssExtractorPatternFiles.Identity)')">
-      <Output TaskParameter="Lines" ItemName="_DiscoveredPatterns" />
-    </ReadLinesFromFile>
+    <ReadPatternsFromFile FilePath="%(_CssExtractorPatternFiles.Identity)" Condition="Exists('%(_CssExtractorPatternFiles.Identity)')">
+      <Output TaskParameter="Patterns" ItemName="_DiscoveredPatterns" />
+    </ReadPatternsFromFile>
     
     <PropertyGroup>
-      <!-- Append discovered patterns -->
-      <_AllPatterns Condition="'@(_DiscoveredPatterns)' != ''">$(_AllPatterns);@(_DiscoveredPatterns)</_AllPatterns>
+      <!-- Append discovered patterns using metadata to preserve backslashes -->
+      <_AllPatterns Condition="'@(_DiscoveredPatterns)' != ''">$(_AllPatterns);@(_DiscoveredPatterns->'%(RawPattern)', ';')</_AllPatterns>
       
       <!-- Add any additional patterns defined by packages via MSBuild properties -->
       <_AllPatterns Condition="'$(AdditionalCssExtractorPatterns)' != ''">$(_AllPatterns);$(AdditionalCssExtractorPatterns)</_AllPatterns>
@@ -80,7 +115,7 @@
     
     <!-- Debug output -->
     <Message Text="CssExtractor: Found pattern files: @(_CssExtractorPatternFiles)" Importance="normal" Condition="'@(_CssExtractorPatternFiles)' != ''" />
-    <Message Text="CssExtractor: Discovered patterns: @(_DiscoveredPatterns)" Importance="normal" Condition="'@(_DiscoveredPatterns)' != ''" />
+    <Message Text="CssExtractor: Discovered patterns: @(_DiscoveredPatterns->'%(RawPattern)', ';')" Importance="normal" Condition="'@(_DiscoveredPatterns)' != ''" />
     <Message Text="CssExtractor: Final pattern count: $(CssExtractorPatterns.Split(';').Length)" Importance="normal" />
   </Target>
 
