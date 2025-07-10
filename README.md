@@ -28,6 +28,8 @@ To use CssExtractor.MSBuild in your project, include it as a PackageReference in
 </ItemGroup>
 ```
 
+> Note: If you don't see xml comments in the above code block, see the [readme](https://github.com/ucdavis/CssExtractor.MSBuild) on GitHub.
+
 ## Configuration
 
 CssExtractor.MSBuild works out-of-the-box with sensible defaults. It automatically scans common file types (HTML, CSHTML, Razor, and C# files) using built-in patterns that detect:
