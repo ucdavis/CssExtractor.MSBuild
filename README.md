@@ -87,7 +87,7 @@ Then, update your project file to pack it:
 </ItemGroup>
 ```
 
-You can also customize files to include/exclude and output location:
+You can also customize files to include/exclude and customize the output location:
 
 ```xml
 <PropertyGroup>
