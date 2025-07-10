@@ -1,9 +1,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <UsingTask TaskName="CssExtractorTask"
-    AssemblyFile="$(MSBuildThisFileDirectory)..\..\tools\net8.0\CssExtractor.MSBuild.dll" />
+    AssemblyFile="$(MSBuildThisFileDirectory)../../tools/net8.0/CssExtractor.MSBuild.dll" />
 
   <!-- Custom task to read pattern files without backslash corruption -->
-  <UsingTask TaskName="ReadPatternsFromFile" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+  <UsingTask TaskName="ReadPatternsFromFile" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <FilePath ParameterType="System.String" Required="true" />
       <Patterns ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
